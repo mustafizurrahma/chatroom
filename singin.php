@@ -13,6 +13,54 @@
     <link rel="stylesheet" href="css/singin.css">
   </head>
   <body>
+
+
+
+  <?php
+session_start();
+
+include 'include/connection.php';
+
+if ( isset( $_POST['sing_in'] ) ) {
+    
+    $email = htmlentities( mysqli_real_escape_string( $con, $_POST['email'] ) );
+
+    $pass= htmlentities( mysqli_real_escape_string( $con, $_POST['password'] ) );
+
+
+
+    
+    $select_user = "select * from users Where user_email='$email' AND user_pass='$pass'";
+    $check_user_email = mysqli_query( $con, $select_user );
+    $check_user = mysqli_num_rows( $check_user_email );
+
+    if ( $check_user == 1 ) {
+        $_SESSION['user_email']=$email;
+
+        $update_msg = mysqli_query($con, "UPDATE users SET log_in='online' WHERE User_email='$email'");
+
+        $user = $_SESSION['user_email'];
+        $get_user = "select * from fsers where user_email='$user'";
+
+        $run_user = mysqli_query($con, $get_user);
+
+        $row = mysqli_fetch_array($run_user);
+
+        $user_name = $row['user_name'];
+
+        echo "<script>window.open('home.php?user_name=$user_name', '_self')</script>";
+    }else {
+      echo "<div class='alert alert-danger'>
+        <strong>Check Your Email And Password</strong>
+      </div>";
+    }
+
+
+
+
+}
+
+?>
         <div class="sing-form">
           <form action="" method="POST">
               <div class="form-header">
@@ -28,9 +76,8 @@
                 <input type="password" class="form-control" name="password" placeholder="Password" id="" autocomplete="off" required>
               </div>
               <div class="small">Forget Password? <a href="forget_pass.php">Click Here</a> </div></form>
-              <div class="form-group">
-                <button type="submit" class="btn btn-primary btn-block btn-lg" name="sing_in">Sing In</button>
-              </div>
+                <input type="button" value="Sing In" name="sing_in">
+                <!-- <button type="submit" class="btn btn-primary btn-block btn-lg" name="sing_in">Sing In</button> -->
              <?php //include("singin_user.php");?> 
           </form>
           <!-- Creat A New Account -->
